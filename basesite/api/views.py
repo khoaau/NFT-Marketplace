@@ -123,7 +123,7 @@ def get_wallet_favorites(request):
 
 
 @csrf_exempt
-@require_http_methods(["GET"])
+@require_http_methods(["POST"])
 def get_comments(request):
     request_body = json.loads(request.body)
     token_id = request_body['token_id']

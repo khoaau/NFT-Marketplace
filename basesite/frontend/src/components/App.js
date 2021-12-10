@@ -3,6 +3,7 @@ import CreateItem from "./CreateItem";
 import MyAsset from "./MyAsset";
 import Navigation from "./navigation/Navigation";
 import Details from "../layouts/details/Details";
+import React, { Component }  from 'react';
 
 import {
   BrowserRouter,

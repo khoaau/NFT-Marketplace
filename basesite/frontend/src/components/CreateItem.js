@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
-
+import React, { Component }  from 'react';
 import { useState } from 'react'
 import { useNavigate } from "react-router";
 

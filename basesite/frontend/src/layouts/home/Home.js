@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Web3Modal from "web3modal"
 import { Container } from 'react-bootstrap';
+import React, { Component }  from 'react';
 
 // Constants
 import { nftaddress, nftmarketaddress } from '../../constants/constants'

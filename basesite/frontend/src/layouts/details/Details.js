@@ -3,8 +3,9 @@ import { ethers } from 'ethers'
 import axios from 'axios';
 
 import React, { useEffect, useState } from 'react'
-import { Container, Card, Row, Col } from 'react-bootstrap';
+import {Container, Card, Row, Col, Button, Form} from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
+import "../../components/App.css"
 
 // Constants
 import { nftaddress, nftmarketaddress } from '../../constants/constants'
@@ -12,6 +13,7 @@ import { nftaddress, nftmarketaddress } from '../../constants/constants'
 // Contracts
 import NFT from '../../contracts/NFT.json'
 import Market from '../../contracts/NFTMarket.json'
+import Comments from "../../components/comments/comments";
 
 export default function Details() {
   const { id } = useParams();
@@ -19,7 +21,11 @@ export default function Details() {
   const [nftDetails, setNftDetails] = useState({});
   const [nftMetadata, setNftMetadata] = useState({});
 
-  const nft_token_id = `https://ipfs.infura.io/ipfs/${id}`
+  // Comments
+    const [nftComments, setNftComments] = useState([]);
+    const [commentBody, updateCommentBody] = useState('');
+
+    const nft_token_id = `https://ipfs.infura.io/ipfs/${id}`
   useEffect(() => {
     // First, update the view count by 1, then
     // Grab the NFT details and metadata from the Django API server
@@ -63,6 +69,8 @@ export default function Details() {
         .catch((error) => {
           console.error(error);
         });
+        //Comments
+        fetchComments();
     }
     loadNFTs();
   }, [id]);
@@ -100,6 +108,83 @@ export default function Details() {
     if (nft && nft.length > 0) setNft(nft[0]);
   }
 
+  // Comments feature code
+    // will separate it after fix the bug
+  function Comments(){
+      return(
+          <React.Fragment>
+              <h3>Comments</h3>
+              { !nftComments.length && <p>No comment yet.</p> }
+
+              {nftComments.map((nftComment, i) =>
+                  <div key={i} className={"comment-section"}>
+                      <h4 style={{color:"blue"}}>{nftComment.author_alias}</h4>
+                      <hr/>
+                      <p>{nftComment.comment}</p>
+                      <ul>
+                        <li>Up vote: {nftComment.up_votes}</li>
+                          <li> Down vote: {nftComment.down_votes}</li>
+                          <li>Tips: {nftComment.tip}</li>
+                      </ul>
+                  </div>
+              )}
+
+              {postSection()}
+
+          </React.Fragment>
+      )
+  }
+
+  function fetchComments(){
+      fetch('http://localhost:8000/api/get_comments/', {
+          method: "POST",
+          body: JSON.stringify({
+              "token_id": nft_token_id,
+          })
+      }).then((response) => response.json())
+          .then((json) => {
+              setNftComments(json);
+          })
+  }
+
+  function postSection(){
+      return(
+              <Form>
+                  <Form.Group controlId="formCommentBody" >
+                      <Form.Control as="textarea" rows={4} value={commentBody}
+                                    placeholder="Type comment"
+                                    onChange={e => updateCommentBody(e.target.value)} />
+                  </Form.Group>
+                  <Button variant="primary" type={"submit"}
+                          style={{float: 'right' }}
+                          onClick={(e) => postComment(e)}>
+                      Post
+                  </Button>
+              </Form>
+      )
+  }
+  function postComment(e){
+      e.preventDefault();
+      const { comment } = commentBody;
+      console.log("Comment Body: " + comment);
+
+      fetch('http://localhost:8000/api/get_comments/', {
+          method: "POST",
+          body: JSON.stringify({
+              "token_id": nft_token_id,
+              "comment": comment,
+              "author_alias": nftDetails.author_alias,
+              "author_address": nftDetails.author_address,
+          })
+      }).then((response) => response.json())
+          .then((json) => {
+              console.log(json);
+          })
+          .catch((error) => {
+              console.error(error);
+          });
+  }
+
   return (
     <React.Fragment>
       {nft && (
@@ -131,7 +216,9 @@ export default function Details() {
           </Row>
           <Row>
             {/* This will contain the comments */}
-            <h2>Comments</h2>
+              {/* render bug*/}
+              {/*<Comments tokenId={nft_token_id}/>*/}
+                <Comments/>
           </Row>
         </Container>
       )}

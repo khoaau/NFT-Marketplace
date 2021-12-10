@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-
-
+import React, { Component }  from 'react';
 import { Navbar, Container, Nav, Button } from 'react-bootstrap';
 
 export default function Navigation() {

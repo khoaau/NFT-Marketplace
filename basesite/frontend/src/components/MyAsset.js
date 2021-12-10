@@ -4,6 +4,7 @@ import axios from 'axios'
 import Web3Modal from "web3modal"
 import { useNavigate } from 'react-router-dom';
 import { Container, CardGroup } from 'react-bootstrap';
+import React, { Component }  from 'react';
 
 import { nftaddress, nftmarketaddress } from '../constants/constants'
 
