@@ -10,6 +10,10 @@ import "../../components/App.css"
 // Constants
 import { nftaddress, nftmarketaddress } from '../../constants/constants'
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faThumbsUp as regularThumbsUp, faThumbsDown as regularThumbsDown } from "@fortawesome/free-regular-svg-icons";
+import { faThumbsUp as solidThumbsUp, faThumbsDown as solidThumbsDown, faCoins} from "@fortawesome/free-solid-svg-icons";
+
 // Contracts
 import NFT from '../../contracts/NFT.json'
 import Market from '../../contracts/NFTMarket.json'
@@ -24,6 +28,10 @@ export default function Details() {
   // Comments
     const [nftComments, setNftComments] = useState([]);
     const [commentBody, updateCommentBody] = useState('');
+    const [upVoteIcon, setUpVoteIcon] = useState(regularThumbsUp);
+    const [upVoteCount, setUpVoteCount] = useState(0);
+    const [downVoteIcon, setDownVoteIcon] = useState(regularThumbsDown);
+    const [downVoteCount, setDownVoteCount] = useState(0);
 
     const nft_token_id = `https://ipfs.infura.io/ipfs/${id}`
   useEffect(() => {
@@ -108,9 +116,52 @@ export default function Details() {
     if (nft && nft.length > 0) setNft(nft[0]);
   }
 
+  function upVoteComment(e, comment) {
+      if (!e) var e = window.event;
+      e.cancelBubble = true;
+      if (e.stopPropagation) {
+          e.stopPropagation();
+      }
+
+      if(upVoteIcon === regularThumbsUp) {
+          setUpVoteIcon(solidThumbsUp);
+          setUpVoteCount(upVoteCount + 1);
+          if(downVoteIcon === solidThumbsDown){
+              setDownVoteCount(downVoteCount - 1);
+              setDownVoteIcon(regularThumbsDown);
+          }
+      }
+      else {
+          setUpVoteIcon(regularThumbsUp);
+          setUpVoteCount(upVoteCount - 1);
+      }
+  }
+
+    function downVoteComment(e, comment) {
+        if (!e) var e = window.event;
+        e.cancelBubble = true;
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
+
+        if(downVoteIcon === regularThumbsDown) {
+            setDownVoteIcon(solidThumbsDown);
+            setDownVoteCount(downVoteCount + 1);
+            if(upVoteIcon === solidThumbsUp){
+                setUpVoteCount(upVoteCount - 1);
+                setUpVoteIcon(regularThumbsUp);
+            }
+        }
+        else {
+            setDownVoteIcon(regularThumbsDown);
+            setDownVoteCount(downVoteCount - 1);
+        }
+    }
+
   // Comments feature code
     // will separate it after fix the bug
   function Comments(){
+
       return(
           <React.Fragment>
               <h3>Comments</h3>
@@ -121,11 +172,22 @@ export default function Details() {
                       <h4 style={{color:"blue"}}>{nftComment.author_alias}</h4>
                       <hr/>
                       <p>{nftComment.comment}</p>
-                      <ul>
-                        <li>Up vote: {nftComment.up_votes}</li>
-                          <li> Down vote: {nftComment.down_votes}</li>
-                          <li>Tips: {nftComment.tip}</li>
-                      </ul>
+                      <div className={"reaction-div"}>
+                        <div>
+                            <FontAwesomeIcon icon={upVoteIcon}
+                                             onClick={(e) => upVoteComment(e, nftComment)} title="UpVote"/>
+                            {nftComment.up_votes}
+                        </div>
+                          <div>
+                              <FontAwesomeIcon icon={downVoteIcon}
+                                               onClick={(e) => downVoteComment(e, nftComment)} title="DownVote"/>
+                              {nftComment.down_votes}
+                          </div>
+                          <div>
+                              <FontAwesomeIcon icon={faCoins}/>
+                              {nftComment.tips}
+                          </div>
+                      </div>
                   </div>
               )}
 
