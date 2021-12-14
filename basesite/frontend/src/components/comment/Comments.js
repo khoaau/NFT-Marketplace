@@ -46,10 +46,9 @@ export default function Comment(props) {
                 if(isFieldDownvoted){
                     setDownVoteIcon(solidThumbsDown)
                 } else setDownVoteIcon(regularThumbsDown)
-                // console.log(upVoteIcon)
             })
             .catch((error) => {
-                // console.error(error);
+                console.error(error);
             });
 
     }, []);
@@ -152,7 +151,7 @@ export default function Comment(props) {
         }
     }
 
-    function tipsComment (e, comment){
+    function tipsComment (){
         setTipsCount(tipsCount + 1 );
 
         fetch('http://localhost:8000/api/tips_comment/', {
